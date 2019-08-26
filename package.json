@@ -1,6 +1,6 @@
 {
   "name": "github-links",
-  "displayName": "github-links",
+  "displayName": "Github Links",
   "description": "This extension opens up the github links in your browser",
   "version": "0.0.1",
   "publisher": "riteshksriv",
@@ -8,7 +8,7 @@
     "vscode": "^1.37.0"
   },
   "categories": [
-    "Other"
+    "SCM Providers"
   ],
   "activationEvents": [
     "onCommand:githublinks.history",
