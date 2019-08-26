@@ -3,7 +3,7 @@
   "displayName": "github-links",
   "description": "This extension opens up the github links in your browser",
   "version": "0.0.1",
-  "publisher": "riteshsriv",
+  "publisher": "riteshksriv",
   "engines": {
     "vscode": "^1.37.0"
   },
