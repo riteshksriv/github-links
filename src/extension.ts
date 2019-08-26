@@ -1,27 +1,92 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import _ from 'lodash'
+import gitRemoteOriginUrl from 'git-remote-origin-url'
+import branch from 'git-branch'
+import voca from 'voca'
+import url from './url'
+import { exec } from 'child_process'
+import simplegit from 'simple-git/promise';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "github-links" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
+	let disposable = vscode.commands.registerCommand('githublinks.history', () => {
 		// The code you place here will be executed every time your command is executed
-
+		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
+		gitHistoryUrl(url.toForwardSlash(fileName))
+			.then(url => {
+				openUrl(url)
+			})
+			.catch(error => {
+				vscode.window.showInformationMessage(`Error creating url ${error}`)
+			})
+		return url
 	});
 
+	let page = vscode.commands.registerCommand('githublinks.page', () => {
+		// The code you place here will be executed every time your command is executed
+		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
+		// Display a message box to the user
+		getPageUrl(url.toForwardSlash(fileName))
+			.then(url => {
+				openUrl(url)
+			})
+			.catch(error => {
+				vscode.window.showInformationMessage(`Error creating url ${error}`)
+			})
+		return url
+	});
+
+	context.subscriptions.push(page);
 	context.subscriptions.push(disposable);
 }
 
+async function getPageUrl(filePath: string) {
+	let folder = url.parentPath(filePath)
+	let remoteUrl = await getBaseUrl(folder)
+	const branchName = await getBranch(folder)
+	let filePagePath = `${remoteUrl}blob/${branchName}`
+	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
+	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
+	return `${filePagePath}/${relPath}`
+}
+
+async function getBaseUrl(folder: string) {
+	let remoteUrl = url.toForwardSlash(await gitRemoteOriginUrl(folder))
+	remoteUrl = voca.replace(remoteUrl, ':', '/')
+	remoteUrl = voca.replace(remoteUrl, 'git@', 'https://')
+	remoteUrl = voca.substring(remoteUrl, 0, remoteUrl.length-4)
+	return url.appendSlash(remoteUrl)
+}
+
+async function gitHistoryUrl(filePath: string) {
+	let folder = url.parentPath(filePath)
+	let remoteUrl = await getBaseUrl(folder)
+	const branchName = await getBranch(folder)
+	let historyPath = `${remoteUrl}commits/${branchName}`
+	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
+	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
+	return `${historyPath}/${relPath}`
+}
+
+async function getBranch(folder: string) {
+	return branch(folder)
+}
+
+async function getRootFolder(folder: string) {
+	let git = simplegit(folder)
+	let val = git.revparse(['--show-toplevel'])
+	return val
+}
+
+function openUrl(url: string) {
+	exec(`start "" ${url}`, (error) => {
+		if(error) {
+			return vscode.window.showInformationMessage(`Could not open link ${error}`)
+		}
+	})
+}
 // this method is called when your extension is deactivated
 export function deactivate() {}
