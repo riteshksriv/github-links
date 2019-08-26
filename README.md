@@ -1,14 +1,10 @@
 # github-links README
-
-This is the README for your extension "github-links". After writing up a brief description, we recommend including the following sections.
+This extension opens up the github links in your browser
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
+Open GitHub File Page URL
+Open GitHub File History Url
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
