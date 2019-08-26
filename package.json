@@ -7,6 +7,7 @@
   "engines": {
     "vscode": "^1.37.0"
   },
+  "repository": {"url": "https://github.com/riteshksriv/github-links"},
   "categories": [
     "SCM Providers"
   ],
