@@ -11,7 +11,7 @@ import simplegit from 'simple-git/promise';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "github-links" is now active!');
-	let disposable = vscode.commands.registerCommand('githublinks.history', () => {
+	let disposable = vscode.commands.registerCommand('extension.github_history', () => {
 		// The code you place here will be executed every time your command is executed
 		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
 		// Display a message box to the user
@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 		return url
 	});
 
-	let page = vscode.commands.registerCommand('githublinks.page', () => {
+	let page = vscode.commands.registerCommand('extension.github_page', () => {
 		// The code you place here will be executed every time your command is executed
 		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
 		// Display a message box to the user

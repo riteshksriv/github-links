@@ -7,23 +7,25 @@
   "engines": {
     "vscode": "^1.37.0"
   },
-  "repository": {"url": "https://github.com/riteshksriv/github-links"},
+  "repository": {
+    "url": "https://github.com/riteshksriv/github-links"
+  },
   "categories": [
     "SCM Providers"
   ],
   "activationEvents": [
-    "onCommand:githublinks.history",
-    "onCommand:githublinks.page"
+    "onCommand:extension.github_history",
+    "onCommand:extension.github_page"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "githublinks.history",
+        "command": "extension.github_history",
         "title": "Open File GitHub History"
       },
       {
-        "command": "githublinks.page",
+        "command": "extension.github_page",
         "title": "Open File GitHub Page"
       }
     ]
@@ -50,6 +52,10 @@
     "vscode-test": "^1.0.2"
   },
   "dependencies": {
-    "git-branch": "^2.0.1"
+    "git-branch": "^2.0.1",
+    "git-remote-origin-url": "^3.0.0",
+    "lodash": "^4.17.15",
+    "simple-git": "^1.124.0",
+    "voca": "^1.4.0"
   }
 }
