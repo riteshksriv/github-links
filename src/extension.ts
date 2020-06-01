@@ -44,6 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 async function getPageUrl(filePath: string) {
+	filePath = voca.capitalize(filePath)
 	let folder = url.parentPath(filePath)
 	let remoteUrl = await getBaseUrl(folder)
 	const branchName = await getBranch(folder)
