@@ -2,7 +2,7 @@
   "name": "github-links",
   "displayName": "Github Links",
   "description": "This extension opens up the github links in your browser",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publisher": "riteshksriv",
   "engines": {
     "vscode": "^1.37.0"
