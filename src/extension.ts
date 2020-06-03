@@ -50,6 +50,7 @@ async function getPageUrl(filePath: string) {
 	const branchName = await getBranch(folder)
 	let filePagePath = `${remoteUrl}blob/${branchName}`
 	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
+	rootFolder = voca.capitalize(rootFolder)
 	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
 	return `${filePagePath}/${relPath}`
 }
