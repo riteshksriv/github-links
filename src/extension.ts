@@ -12,43 +12,65 @@ import simplegit from 'simple-git/promise';
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "github-links" is now active!');
 	let disposable = vscode.commands.registerCommand('extension.github_history', () => {
-		// The code you place here will be executed every time your command is executed
-		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
-		// Display a message box to the user
-		gitHistoryUrl(url.toForwardSlash(fileName))
-			.then(url => {
-				openUrl(url)
-			})
-			.catch(error => {
-				vscode.window.showInformationMessage(`Error creating url ${error}`)
-			})
-		return url
+		doAction(createHistoryUrl).then(e => console.log("Opened history url"))
 	});
 
 	let page = vscode.commands.registerCommand('extension.github_page', () => {
-		// The code you place here will be executed every time your command is executed
-		let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
-		// Display a message box to the user
-		getPageUrl(url.toForwardSlash(fileName))
-			.then(url => {
-				openUrl(url)
-			})
-			.catch(error => {
-				vscode.window.showInformationMessage(`Error creating url ${error}`)
-			})
-		return url
+		doAction(createPageUrl).then(e => console.log("Opened page url"))
+	});
+
+	let blame = vscode.commands.registerCommand('extension.github_blame', () => {
+		doAction(createBlameUrl, addLineSuffix).then(e => console.log("Opened blame url"))
 	});
 
 	context.subscriptions.push(page);
+	context.subscriptions.push(blame);
 	context.subscriptions.push(disposable);
 }
 
-async function getPageUrl(filePath: string) {
+function getCurrentFile() {
+	let fileName: string = _.get(vscode.window.activeTextEditor, 'document.fileName')
+	return url.toForwardSlash(fileName || '')
+}
+
+function getCurrentLine() {
+	let lineNo: number = _.get(vscode.window.activeTextEditor, 'selection.active.line')
+	return lineNo
+}
+
+function addLineSuffix(link: string) {
+	let lineno = getCurrentLine()
+	return `${link}#L${lineno}`
+}
+
+async function doAction(createUrl: (a: string, b: string) => string, patchUrl: (a: string) => string = _.identity) {
+	return getUrl(getCurrentFile(), createUrl)
+		.then(url => {
+			openUrl(patchUrl(url))
+		})
+		.catch(error => {
+			vscode.window.showInformationMessage(`Error creating url: ${error}`)
+		})
+}
+
+function createBlameUrl(remoteUrl: string, branchName: string) {
+	return `${remoteUrl}blame/${branchName}`
+}
+
+function createPageUrl(remoteUrl: string, branchName: string) {
+	return `${remoteUrl}blob/${branchName}`
+}
+
+function createHistoryUrl(remoteUrl: string, branchName: string) {
+	return `${remoteUrl}commits/${branchName}`
+}
+
+async function getUrl(filePath: string, createUrl: (a: string, b: string) => string) {
 	filePath = voca.capitalize(filePath)
 	let folder = url.parentPath(filePath)
 	let remoteUrl = await getBaseUrl(folder)
 	const branchName = await getBranch(folder)
-	let filePagePath = `${remoteUrl}blob/${branchName}`
+	let filePagePath = createUrl(remoteUrl, branchName)
 	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
 	rootFolder = voca.capitalize(rootFolder)
 	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
@@ -61,18 +83,6 @@ async function getBaseUrl(folder: string) {
 	remoteUrl = voca.replace(remoteUrl, 'git@', 'https://')
 	remoteUrl = voca.substring(remoteUrl, 0, remoteUrl.length-4)
 	return url.appendSlash(remoteUrl)
-}
-
-async function gitHistoryUrl(filePath: string) {
-	filePath = voca.capitalize(filePath)
-	let folder = url.parentPath(filePath)
-	let remoteUrl = await getBaseUrl(folder)
-	const branchName = await getBranch(folder)
-	let historyPath = `${remoteUrl}commits/${branchName}`
-	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
-	rootFolder = voca.capitalize(rootFolder)
-	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
-	return `${historyPath}/${relPath}`
 }
 
 async function getBranch(folder: string) {
