@@ -64,11 +64,13 @@ async function getBaseUrl(folder: string) {
 }
 
 async function gitHistoryUrl(filePath: string) {
+	filePath = voca.capitalize(filePath)
 	let folder = url.parentPath(filePath)
 	let remoteUrl = await getBaseUrl(folder)
 	const branchName = await getBranch(folder)
 	let historyPath = `${remoteUrl}commits/${branchName}`
 	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
+	rootFolder = voca.capitalize(rootFolder)
 	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
 	return `${historyPath}/${relPath}`
 }
