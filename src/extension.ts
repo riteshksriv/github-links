@@ -79,6 +79,9 @@ async function getUrl(filePath: string, createUrl: (a: string, b: string) => str
 
 async function getBaseUrl(folder: string) {
 	let remoteUrl = url.toForwardSlash(await gitRemoteOriginUrl(folder))
+	if(remoteUrl.startsWith('https://')) {
+		return url.appendSlash(remoteUrl)
+	}
 	remoteUrl = voca.replace(remoteUrl, ':', '/')
 	remoteUrl = voca.replace(remoteUrl, 'git@', 'https://')
 	remoteUrl = voca.substring(remoteUrl, 0, remoteUrl.length-4)

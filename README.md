@@ -31,3 +31,6 @@ Updated Readme
 ### 2.0.0
 Added blame URL opening feature
 Refactored some code
+
+### 2.1.0
+Fixed for https remote url
