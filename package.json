@@ -59,7 +59,7 @@
   "dependencies": {
     "git-branch": "^2.0.1",
     "git-remote-origin-url": "^3.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "simple-git": "^1.124.0",
     "voca": "^1.4.0"
   }
