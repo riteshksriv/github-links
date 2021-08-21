@@ -34,3 +34,7 @@ Refactored some code
 
 ### 2.1.0
 Fixed for https remote url
+
+### 3.0.0
+Added feature - Copy File GitHub History url to Clipboard
+Optiimized package size
