@@ -2,7 +2,8 @@
   "name": "github-links",
   "displayName": "Github Links",
   "description": "This extension opens up the github links in your browser",
-  "version": "2.0.0",
+  "version": "3.0.0",
+  "license": "MIT",
   "publisher": "riteshksriv",
   "engines": {
     "vscode": "^1.37.0"
@@ -16,7 +17,8 @@
   "activationEvents": [
     "onCommand:extension.github_history",
     "onCommand:extension.github_page",
-    "onCommand:extension.github_blame"
+    "onCommand:extension.github_blame",
+    "onCommand:github.links.history_clipboard"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -32,6 +34,10 @@
       {
         "command": "extension.github_blame",
         "title": "Open File GitHub Blame url"
+      },
+      {
+        "command": "github.links.history_clipboard",
+        "title": "Copy File GitHub History url to Clipboard"
       }
     ]
   },
@@ -60,9 +66,10 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
+    "clipboardy": "^2.3.0",
     "git-branch": "^2.0.1",
     "git-remote-origin-url": "^3.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "simple-git": "^1.124.0",
     "voca": "^1.4.0"
   }

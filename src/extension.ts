@@ -1,13 +1,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import _ from 'lodash'
+import _, { create } from 'lodash'
+import util from 'util'
 import gitRemoteOriginUrl from 'git-remote-origin-url'
 import branch from 'git-branch'
 import voca from 'voca'
 import url from './url'
 import { exec } from 'child_process'
 import simplegit from 'simple-git/promise';
+import clipboardy from 'clipboardy';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "github-links" is now active!');
@@ -23,9 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
 		doAction(createBlameUrl, addLineSuffix).then(e => console.log("Opened blame url"))
 	});
 
+	let clipboardHistory = vscode.commands.registerCommand('github.links.history_clipboard', () => {
+		doActions(() => getUrl(getCurrentFile(), createHistoryUrl), [copy2Clipboard]).then(e => vscode.window.showInformationMessage('Copied URL to clipboard'))
+	});
+
 	context.subscriptions.push(page);
 	context.subscriptions.push(blame);
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(clipboardHistory);
 }
 
 function getCurrentFile() {
@@ -41,6 +48,21 @@ function getCurrentLine() {
 function addLineSuffix(link: string) {
 	let lineno = getCurrentLine()
 	return `${link}#L${lineno}`
+}
+
+async function copy2Clipboard(url: string) {
+	await clipboardy.write(url)
+	return url
+}
+
+type actionFunction = (url: string) => Promise<string>
+
+async function doActions(createUrl: () => Promise<string>, actions: actionFunction[]) : Promise<string> {
+	let urlPromise = createUrl()
+	for(let actionFunc of actions) {
+		urlPromise = urlPromise.then(actionFunc)
+	}
+	return await urlPromise
 }
 
 async function doAction(createUrl: (a: string, b: string) => string, patchUrl: (a: string) => string = _.identity) {
