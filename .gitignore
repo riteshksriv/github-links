@@ -3,3 +3,7 @@ node_modules
 .vscode-test/
 *.vsix
 dist
+
+# Jetbrains rider
+.idea/
+*.sln.iml
