@@ -8,19 +8,25 @@ import voca from 'voca'
 import url from './url'
 import { exec } from 'child_process'
 import simplegit from 'simple-git/promise';
+import GitInterface from './clients/gitInterface';
+import ClientFactory from './clients/clientFactory';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "github-links" is now active!');
+	
 	let disposable = vscode.commands.registerCommand('extension.github_history', () => {
-		doAction(createHistoryUrl).then(e => console.log("Opened history url"))
+		doAction((client: GitInterface) => client.createHistoryUrl())
+			.then(e => console.log("Opened history url"))
 	});
 
 	let page = vscode.commands.registerCommand('extension.github_page', () => {
-		doAction(createPageUrl).then(e => console.log("Opened page url"))
+		doAction((client: GitInterface) => client.createPageUrl())
+			.then(e => console.log("Opened page url"))
 	});
 
 	let blame = vscode.commands.registerCommand('extension.github_blame', () => {
-		doAction(createBlameUrl, addLineSuffix).then(e => console.log("Opened blame url"))
+		doAction((client: GitInterface) => client.createBlameUrl())
+			.then(e => console.log("Opened blame url"))
 	});
 
 	context.subscriptions.push(page);
@@ -43,7 +49,7 @@ function addLineSuffix(link: string) {
 	return `${link}#L${lineno}`
 }
 
-async function doAction(createUrl: (a: string, b: string) => string, patchUrl: (a: string) => string = _.identity) {
+async function doAction(createUrl: (client: GitInterface) => string, patchUrl: (a: string) => string = _.identity) {
 	return getUrl(getCurrentFile(), createUrl)
 		.then(url => {
 			openUrl(patchUrl(url))
@@ -53,39 +59,28 @@ async function doAction(createUrl: (a: string, b: string) => string, patchUrl: (
 		})
 }
 
-function createBlameUrl(remoteUrl: string, branchName: string) {
-	return `${remoteUrl}blame/${branchName}`
-}
-
-function createPageUrl(remoteUrl: string, branchName: string) {
-	return `${remoteUrl}blob/${branchName}`
-}
-
-function createHistoryUrl(remoteUrl: string, branchName: string) {
-	return `${remoteUrl}commits/${branchName}`
-}
-
-async function getUrl(filePath: string, createUrl: (a: string, b: string) => string) {
+async function getUrl(filePath: string, createUrl: (client: GitInterface) => string) {
 	filePath = voca.capitalize(filePath)
 	let folder = url.parentPath(filePath)
 	let remoteUrl = await getBaseUrl(folder)
 	const branchName = await getBranch(folder)
-	let filePagePath = createUrl(remoteUrl, branchName)
 	let rootFolder = url.toForwardSlash(await getRootFolder(folder))
 	rootFolder = voca.capitalize(rootFolder)
 	let relPath = url.makeRelativePath(filePath, url.appendSlash(rootFolder))
-	return `${filePagePath}/${relPath}`
+	const gitClient = ClientFactory.createClient(branchName, relPath, remoteUrl, getCurrentLine())
+	return createUrl(gitClient)
 }
 
 async function getBaseUrl(folder: string) {
-	let remoteUrl = url.toForwardSlash(await gitRemoteOriginUrl(folder))
-	if(remoteUrl.startsWith('https://')) {
-		return url.appendSlash(remoteUrl)
+	const urlWithGit = url.toForwardSlash(await gitRemoteOriginUrl(folder))
+	let remoteURL = urlWithGit.split('.git')[0];
+	if(remoteURL.startsWith('https://')) {
+		return url.appendSlash(remoteURL)
 	}
-	remoteUrl = voca.replace(remoteUrl, ':', '/')
-	remoteUrl = voca.replace(remoteUrl, 'git@', 'https://')
-	remoteUrl = voca.substring(remoteUrl, 0, remoteUrl.length-4)
-	return url.appendSlash(remoteUrl)
+	remoteURL = voca.replace(remoteURL, ':', '/')
+	remoteURL = voca.replace(remoteURL, 'git@', 'https://')
+	remoteURL = voca.substring(remoteURL, 0, remoteURL.length-4)
+	return url.appendSlash(remoteURL)
 }
 
 async function getBranch(folder: string) {
@@ -99,7 +94,7 @@ async function getRootFolder(folder: string) {
 }
 
 function openUrl(url: string) {
-	exec(`start "" ${url}`, (error) => {
+	exec(`start "" "${url}"`, (error) => {
 		if(error) {
 			return vscode.window.showInformationMessage(`Could not open link ${error}`)
 		}
