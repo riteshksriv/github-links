@@ -28,6 +28,10 @@
       {
         "command": "extension.github_blame",
         "title": "Open File GitHub Blame url"
+      },
+      {
+        "command": "extension.open_file_clipboard",
+        "title": "Open File From GitHub url in clipboard"
       }
     ]
   },

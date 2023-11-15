@@ -10,6 +10,11 @@ interface Dictionary<T> {
 
 export type StringMap = Dictionary<string>
 export default class URL {
+  static parseQueryFromUrl(url: string) {
+    url = url || ''
+    const params = url.substring(url.indexOf('?') + 1);
+    return this.params(params || "");
+  }
   static params(query: string) {
     return URL.parseParams(query);
   }
@@ -18,6 +23,7 @@ export default class URL {
       obj[pair[0]] = pair[1] && URL.decodeURI(pair[1])
     }, {});
   }
+
   static decodeURI(url: string): string{
     try{
       let ret = decodeURIComponent(url)

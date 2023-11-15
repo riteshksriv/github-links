@@ -11,7 +11,6 @@ import editor from "./editor";
 import * as repo from "./repo";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "github-links" is now active!');
 
   let disposable = vscode.commands.registerCommand(
     "extension.github_history",
@@ -34,14 +33,18 @@ export function activate(context: vscode.ExtensionContext) {
     );
   });
 
+  const openFile = vscode.commands.registerCommand(
+    "extension.open_file",
+    async () => {
+      const remotePath = await vscode.env.clipboard.readText();
+      await editor.openDocument(await repo.getAbsPathForRemote(remotePath, editor.getCurrentFolder()));
+    }
+  );
+
+  context.subscriptions.push(openFile);
   context.subscriptions.push(page);
   context.subscriptions.push(blame);
   context.subscriptions.push(disposable);
-}
-
-function addLineSuffix(link: string) {
-  let lineno = editor.getCurrentLine();
-  return `${link}#L${lineno}`;
 }
 
 async function doAction(
