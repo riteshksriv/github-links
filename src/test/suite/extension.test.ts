@@ -1,18 +1,17 @@
 import * as assert from 'assert';
-import { before } from 'mocha';
+import { getAbsPathForRemote } from "../../repo";
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode';
-// import * as myExtension from '../extension';
-
-suite('Extension Test Suite', () => {
-	before(() => {
-		vscode.window.showInformationMessage('Start all tests.');
-	});
-
-	test('Sample test', () => {
-		assert.equal(-1, [1, 2, 3].indexOf(5));
-		assert.equal(-1, [1, 2, 3].indexOf(0));
-	});
+describe("Extension Test Suite", () => {
+  test("openFileFromRemote should open a file from a remote path", async () => {
+    const remotePath =
+      "https://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@github.com/riteshksriv/github-links/blob/master/src/url.ts";
+    const absPath = await getAbsPathForRemote(
+      remotePath,
+      "C:\\repos\\projects\\github-links\\"
+    );
+    assert.strictEqual(
+      absPath,
+      "C:/repos/projects/github-links/src/url.ts"
+    );
+  });
 });

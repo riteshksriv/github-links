@@ -2,6 +2,9 @@ import GitInterface from "./gitInterface"
 import voca from 'voca'
 
 export default class AzureDevops extends GitInterface {
+    getRelativePath(): string {
+        throw new Error("Method not implemented.")
+    }
 
     constructor(branchName: string, filePath: string, remoteUrl: string, lineNo: number) {
         super(branchName, filePath, remoteUrl, lineNo)

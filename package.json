@@ -36,17 +36,22 @@
     "compile": "webpack --mode development",
     "watch": "webpack --watch --mode development",
     "pretest": "npm run compile",
-    "test": "node ./dist/test/runTest.js"
+    "test": "jest"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
     "@types/git-branch": "^2.0.1",
     "@types/glob": "^7.1.1",
+    "@types/jest": "^29.5.8",
     "@types/lodash": "^4.14.137",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/voca": "^1.4.0",
     "@types/vscode": "^1.37.0",
+    "babel-jest": "^29.7.0",
     "glob": "^7.1.4",
+    "jest": "^29.7.0",
     "mocha": "^6.1.4",
     "ts-loader": "^9.2.5",
     "tslint": "^5.12.1",
