@@ -1,3 +1,4 @@
+import voca from "voca";
 import url from "../url";
 import GitInterface from "./gitInterface"
 
@@ -20,8 +21,12 @@ export default class Github extends GitInterface {
   createBlameUrl(): string {
     return `${this.remoteUrl}blame/${this.branchName}/${this.filePath}#L${this.lineNo}`;
   }
-  getRelativePath(remotePath: string): string {
+  getRelativePath(remotePath: string): { relPath: string, lineNo: number} {
     const rootPath = this.createPageUrl();
-    return url.makeRelativePath(remotePath, rootPath);
+    const lineNo = parseInt(voca.substr(url.extractHashString(remotePath), 1)) || 0;
+    return {
+      relPath: url.makeRelativePath(url.filePath(remotePath), rootPath),
+      lineNo: lineNo
+    }
   }
 }

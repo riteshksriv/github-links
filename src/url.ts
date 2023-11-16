@@ -10,11 +10,6 @@ interface Dictionary<T> {
 
 export type StringMap = Dictionary<string>
 export default class URL {
-  static parseQueryFromUrl(url: string) {
-    url = url || ''
-    const params = url.substring(url.indexOf('?') + 1);
-    return this.params(params || "");
-  }
   static params(query: string) {
     return URL.parseParams(query);
   }
@@ -91,12 +86,6 @@ export default class URL {
   }
   static hasFileProtocol(url: string): boolean{
     return URL.protocol(url) === 'file:'
-  }
-  static hasRhpjProtocol(url: string): boolean{
-    return URL.protocol(url) === 'rhpj:'
-  }
-  static stripRhpjProtocol(url: string): string{
-    return URL.hasRhpjProtocol(url) ? url.substring('rhpj:'.length) : url
   }
   static stripProtocol(url: string): string {
     let protocol = URL.protocol(url)

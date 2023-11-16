@@ -13,5 +13,5 @@ export default abstract class GitInterface {
     abstract createHistoryUrl(): string;
     abstract createPageUrl() : string;
     abstract createBlameUrl() : string;
-    abstract getRelativePath(remoteURL: string) : string;
+    abstract getRelativePath(remoteURL: string) : { relPath: string, lineNo: number};
 }

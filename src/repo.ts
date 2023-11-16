@@ -10,7 +10,11 @@ import url from "./url";
 export async function getAbsPathForRemote(remotePath: string, currentFolder: string) {
   const gitClient = await getClientFromRemoteURL(currentFolder);
   const rootFolder = await getRootFolder(currentFolder);
-  return url.makeFullPath(gitClient.getRelativePath(remotePath), rootFolder);
+  const path = gitClient.getRelativePath(remotePath);
+  return {
+    fullPath: url.makeFullPath(path.relPath, rootFolder),
+    lineNo: path.lineNo
+  }
 }
 
 export async function getClientFromRemoteURL(currentFolder: string, lineNo: number = 0): Promise<GitInterface> {

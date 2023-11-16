@@ -36,8 +36,12 @@ export default class AzureDevops extends GitInterface {
     }&line=${this.lineNo}`;
   }
   
-  getRelativePath(remotePath: string): string {
-    const path = _.get(url.parseQueryFromUrl(remotePath), 'path')
-    return voca.trimLeft(path, '/')
+  getRelativePath(remotePath: string): {relPath: string, lineNo: number} {
+    const lineNo = parseInt(voca.substr(url.extractHashString(remotePath), 1)) || 0;
+    const path = _.get(url.params(url.extractParamString(remotePath)), "path");
+    return {
+      relPath: voca.trimLeft(path, '/'),
+      lineNo: lineNo
+    }
   }
 }

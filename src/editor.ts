@@ -1,16 +1,20 @@
 import vscode from "vscode";
 import url from "./url";
 import _ from 'lodash'
+import fs from "fs";
 
 export default new class Editor {
-  async openDocument(filePath: string): Promise<vscode.TextDocument> {
+  async openDocument(filePath: string, lineNumber: number): Promise<vscode.TextDocument> {
     const currentFile = this.getCurrentFile();
     if(currentFile === filePath) {
         return vscode.window.activeTextEditor!.document;
     }
+    await fs.promises.access(filePath);
     return vscode.workspace.openTextDocument(filePath).then(async (doc) => {
       const editor = await vscode.window.showTextDocument(doc);
-        return editor.document;
+      const position = new vscode.Position(lineNumber, 0);
+      editor.selection = new vscode.Selection(position, position);
+      return editor.document;
     });
   }
 

@@ -34,10 +34,18 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   const openFile = vscode.commands.registerCommand(
-    "extension.open_file",
+    "extension.open_file_clipboard",
     async () => {
-      const remotePath = await vscode.env.clipboard.readText();
-      await editor.openDocument(await repo.getAbsPathForRemote(remotePath, editor.getCurrentFolder()));
+      try {
+        const remotePath = await vscode.env.clipboard.readText();
+        const { fullPath, lineNo } = await repo.getAbsPathForRemote(
+          remotePath,
+          editor.getCurrentFolder()
+        );
+        await editor.openDocument(fullPath, lineNo);
+      } catch (error) {
+        vscode.window.showErrorMessage(`Error opening file: ${error}`);
+      }
     }
   );
 
