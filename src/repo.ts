@@ -39,11 +39,12 @@ export async function getRootFolder(folder: string) {
 
 export async function getBranch(folder: string) {
   return branch(folder);
-}export async function getBaseUrl(folder: string) {
-  const urlWithGit = url.toForwardSlash(await gitRemoteOriginUrl(folder));
-  let remoteURL = urlWithGit.split(".git")[0];
+}
+
+export async function getBaseUrl(folder: string) {
+  let remoteURL = await getRemoteURL(folder);
   if (remoteURL.startsWith("https://")) {
-    return url.appendSlash(remoteURL);
+    return remoteURL;
   }
   remoteURL = voca.replace(remoteURL, ":", "/");
   remoteURL = voca.replace(remoteURL, "git@", "https://");
@@ -51,3 +52,9 @@ export async function getBranch(folder: string) {
   return url.appendSlash(remoteURL);
 }
 
+
+export async function getRemoteURL(folder: string) {
+  const urlWithGit = url.toForwardSlash(await gitRemoteOriginUrl(folder));
+  let remoteURL = urlWithGit.split(".git")[0];
+  return url.appendSlash(remoteURL);
+}

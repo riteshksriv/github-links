@@ -1,17 +1,18 @@
 import * as assert from 'assert';
-import { getAbsPathForRemote } from "../../repo";
+import simplegit from 'simple-git/promise';
+import _, { get } from 'lodash';
+import { getAbsPathForRemote, getRemoteURL, getRootFolder } from "../../repo";
 
 describe("Extension Test Suite", () => {
   test("openFileFromRemote should open a file from a remote path", async () => {
-    const remotePath =
-      "https://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@github.com/riteshksriv/github-links/blob/master/src/url.ts";
-    const absPath = await getAbsPathForRemote(
-      remotePath,
-      "C:\\repos\\projects\\github-links\\"
-    );
+    const rootFolder = await getRootFolder(".");
+    const git = simplegit(rootFolder)
+    const remotePath = await getRemoteURL(rootFolder);
+    const fullPath = `${remotePath}blob/master/src/url.ts`;
+    const absPath = await getAbsPathForRemote(fullPath, rootFolder);
     assert.strictEqual(
-      absPath,
-      "C:/repos/projects/github-links/src/url.ts"
+      absPath.fullPath,
+      `${rootFolder}src/url.ts`
     );
   });
 });
