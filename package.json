@@ -13,6 +13,7 @@
   "categories": [
     "SCM Providers"
   ],
+  "icon": "logo.jpeg",
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
